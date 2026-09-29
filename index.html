@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Testwerkstatt</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+:root{--bg:#f3f5f9;--card:#fff;--ink:#16203a;--mut:#5d687f;--line:#dce1ec;--acc:#2f5bd8;--blue:#1d4ed8;--ok:#177a44;--bad:#b3261e;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e1424;--card:#172038;--ink:#e8ecf7;--mut:#9aa6c0;--line:#2a3554;--blue:#8fb0ff;--ok:#5fd394;--bad:#ff8a80}}
+:root[data-theme="dark"]{--bg:#0e1424;--card:#172038;--ink:#e8ecf7;--mut:#9aa6c0;--line:#2a3554;--blue:#8fb0ff;--ok:#5fd394;--bad:#ff8a80}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:inherit}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+body.serif{font-family:Georgia,"Iowan Old Style","Times New Roman",serif;line-height:1.6}
+main{max-width:780px;margin:0 auto;padding:16px}
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;padding:10px 16px;background:var(--card);border-bottom:1px solid var(--line)}
+.top nav{display:flex;gap:4px}
+.top nav button{border:0;background:none;color:var(--mut);font:inherit;font-weight:600;padding:8px 14px;border-radius:8px;cursor:pointer}
+.top nav button.on{background:var(--acc);color:#fff}
+.hero{background:var(--acc);color:#fff;padding:28px 16px 24px}
+.hero>*{max-width:748px;margin-left:auto;margin-right:auto}
+.hero h1{margin:0;font-size:1.7rem;line-height:1.2}.hero p{margin:6px auto 0;opacity:.9}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;margin:0 0 14px}
+h2{margin:0 0 12px;font-size:1.15rem}h3{margin:14px 0 6px;font-size:1rem}
+label{display:block;font-size:.88rem;color:var(--mut);font-weight:600}
+input,select,textarea{width:100%;font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:9px 10px;margin:4px 0 10px}
+input[type=color]{height:42px;padding:3px}input[type=checkbox],input[type=radio]{width:auto;margin:0 8px 0 0}
+input:focus,select:focus,textarea:focus,button:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:0 14px}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.row select{width:auto;flex:1;min-width:150px}.row label{display:flex;align-items:center;gap:6px;white-space:nowrap}.row input{width:80px;margin:0}
+.chk{display:flex;align-items:center;grid-column:1/-1;margin:4px 0 10px}
+.btn{display:inline-block;border:0;background:var(--acc);color:#fff;font:inherit;font-weight:600;padding:11px 18px;border-radius:9px;cursor:pointer;text-decoration:none;margin:4px 6px 4px 0}
+.btn.ghost{background:none;color:var(--acc);border:1.5px solid var(--acc)}
+.x{border:0;background:none;color:var(--bad);font-size:1.1rem;cursor:pointer;padding:6px 10px}
+.ans{color:var(--blue);font-weight:500;white-space:pre-wrap;border-left:3px solid var(--blue);padding:2px 0 2px 10px;margin:6px 0}
+.q .ans-in{color:var(--blue);border-color:var(--blue)}
+.qt{font-weight:700;margin:0 0 8px}.pts{color:var(--mut);font-weight:400;font-size:.88rem}
+.opt{display:flex;align-items:flex-start;padding:8px 0;color:var(--ink);font-weight:400;font-size:1rem}
+.note{color:var(--mut);font-size:.88rem}.err{color:var(--bad)}
+.sum{display:flex;gap:18px;flex-wrap:wrap;align-items:flex-end;font-size:1.05rem}.sum input{width:90px}
+#qr{margin:10px 0;background:#fff;display:inline-block;padding:10px;border-radius:8px}
+.badge{font-size:.78rem;font-weight:700;padding:2px 8px;border-radius:20px;margin-left:6px;display:inline-block}
+.badge.ok{background:rgba(23,122,68,.15);color:var(--ok)}
+.badge.bad{background:rgba(179,38,30,.15);color:var(--bad)}
+.tools{display:flex;gap:6px;margin:2px 0 6px}
+.tools button{border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:6px;padding:4px 10px;cursor:pointer;font-weight:700}
+.logt{width:100%;border-collapse:collapse}
+.logt th,.logt td{border-bottom:1px solid var(--line);padding:6px 4px;text-align:left;font-size:.9rem}
+#warn{position:fixed;inset:0;z-index:20;background:rgba(10,16,32,.94);color:#fff;display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px}
+.lock .card:not(.keep){opacity:.55;pointer-events:none}
+[hidden]{display:none!important}
+@media print{.top,.btn{display:none}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div id="warn"><h1>Du hast den Test verlassen</h1><p id="wmsg"></p><button class="btn" id="wback">Zurück zum Test</button></div>
+<script>
+const $=s=>document.querySelector(s),app=$('#app');
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const toB=u=>{let s='';for(const x of u)s+=String.fromCharCode(x);return btoa(s).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'')};
+const fromB=s=>Uint8Array.from(atob(s.replace(/-/g,'+').replace(/_/g,'/')),c=>c.charCodeAt(0));
+async function pack(o){const u=new TextEncoder().encode(JSON.stringify(o));if(window.CompressionStream){const st=new Blob([u]).stream().pipeThrough(new CompressionStream('deflate-raw'));return 'z'+toB(new Uint8Array(await new Response(st).arrayBuffer()))}return 'r'+toB(u)}
+async function unpack(s){const u=fromB(s.slice(1));if(s[0]==='z'){const st=new Blob([u]).stream().pipeThrough(new DecompressionStream('deflate-raw'));return JSON.parse(await new Response(st).text())}return JSON.parse(new TextDecoder().decode(u))}
+const norm=s=>String(s||'').trim().toLowerCase().replace(/\s+/g,' ');
+const hex=h=>[1,3,5].map(i=>parseInt(h.slice(i,i+2),16));
+const noteFor=p=>{const s=T.scale&&T.scale.length?[...T.scale].sort((a,b)=>b[0]-a[0]):[[92,1],[81,2],[67,3],[50,4],[30,5],[0,6]];for(const[t,n]of s)if(p>=t)return n;return s[s.length-1][1]};
+const ansText=(q,a)=>q.t==='mc'?(q.opts[a]??'– keine Antwort –'):(a||'– keine Antwort –');
+const autoPts=(q,a)=>q.t==='mc'?(a===q.c?q.p:0):q.t==='gap'?(q.a.split(';').some(x=>norm(x)&&norm(x)===norm(a))?q.p:0):0;
+const newQ=()=>({t:'free',q:'',p:5,opts:['',''],c:0,a:''});
+function load(){try{return JSON.parse(localStorage.getItem('tw')||'null')}catch(e){return null}}
+function save(){try{localStorage.setItem('tw',JSON.stringify(T))}catch(e){}}
+let T=load()||{title:'Mein Test',sub:'Klasse und Fach',mail:'',acc:'#2f5bd8',font:'sans',intro:'Bearbeite die Aufgaben in Ruhe und selbstständig.',mode:1,guard:true,maxV:3,qs:[newQ()],scale:[[92,1],[81,2],[67,3],[50,4],[30,5],[0,6]]};
+if(!T.scale)T.scale=[[92,1],[81,2],[67,3],[50,4],[30,5],[0,6]];
+function design(){document.documentElement.style.setProperty('--acc',T.acc);document.body.className=T.font==='serif'?'serif':''}
+
+/* ---------- PDF ---------- */
+function makePdf(r,pts,gr,texts){
+ const {jsPDF}=window.jspdf,d=new jsPDF({unit:'mm',format:'a4'}),W=210,M=18,mw=W-2*M,ac=hex(T.acc);let y=32;
+ const need=h=>{if(y+h>282){d.addPage();y=M}};
+ const txt=(s,z,st,col,ind=0)=>{d.setFont('helvetica',st);d.setFontSize(z);d.setTextColor(...col);d.splitTextToSize(String(s||''),mw-ind).forEach(l=>{need(z*.5);d.text(l,M+ind,y);y+=z*.5});y+=1.5};
+ d.setFillColor(...ac);d.rect(0,0,W,22,'F');d.setTextColor(255,255,255);d.setFont('helvetica','bold');d.setFontSize(16);d.text(T.title,M,10);d.setFont('helvetica','normal');d.setFontSize(10);d.text(T.sub||'',M,17);
+ txt('Name(n): '+r.n.join(', ')+'   |   '+r.d,10,'normal',[90,100,120]);y+=3;
+ const dark=[22,32,58],blue=[29,78,216];
+ T.qs.forEach((q,i)=>{need(20);txt((i+1)+'. '+q.q+'  ('+q.p+' P.)',11,'bold',dark);txt(texts?texts[i]:ansText(q,r.a[i]),11,'normal',blue,5);if(pts)txt('Punkte: '+pts[i]+' / '+q.p,10,'italic',[90,100,120],5);y+=3});
+ if(pts){const s=pts.reduce((a,b)=>a+b,0),m=T.qs.reduce((a,q)=>a+q.p,0);need(20);y+=2;txt('Gesamt: '+s+' / '+m+' Punkte ('+Math.round(100*s/m)+' %)   Note: '+gr,13,'bold',ac)}
+ if(r.v&&r.v.length){y+=2;txt('Protokoll: '+r.v.length+' Verstoß/Verstöße – '+r.v.map(v=>v.t+' '+v.w).join('; '),9,'italic',[179,38,30])}
+ return d}
+async function deliver(d,name){
+ const b=d.output('blob'),f=new File([b],name,{type:'application/pdf'});
+ try{if(navigator.canShare&&navigator.canShare({files:[f]})){await navigator.share({files:[f],title:name});return}}catch(e){if(e.name==='AbortError')return}
+ try{const dl=window.claude&&await claude.use('downloads');if(dl){await dl.save({filename:name,data:b});return}}catch(e){}
+ const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=name;a.click();setTimeout(()=>window.open(a.href,'_blank'),500)}
+function copy(el){el.select();try{navigator.clipboard.writeText(el.value)}catch(e){document.execCommand('copy')}}
+
+/* ---------- Lehrkraft ---------- */
+let R=null,touched=false;
+function teacher(){
+ design();document.title='Testwerkstatt';
+ app.innerHTML=`<header class="top"><b>Testwerkstatt</b><nav><button data-t="a" class="on">Erstellen</button><button data-t="b">Teilen</button><button data-t="c">Korrigieren</button></nav></header>
+<main>
+<section id="tab-a"><div class="card"><h2>Design und Einstellungen</h2><div class="grid">
+<label>Titel<input value="${esc(T.title)}" oninput="T.title=this.value;save()"></label>
+<label>Klasse und Fach<input value="${esc(T.sub)}" oninput="T.sub=this.value;save()"></label>
+<label>Deine E-Mail für die Abgabe<input type="email" value="${esc(T.mail)}" oninput="T.mail=this.value;save()"></label>
+<label>Akzentfarbe<input type="color" value="${T.acc}" oninput="T.acc=this.value;save();design()"></label>
+<label>Schrift<select id="fnt" onchange="T.font=this.value;save();design()"><option value="sans">Modern</option><option value="serif">Klassisch</option></select></label>
+<label>Bearbeitung<select id="mode" onchange="T.mode=+this.value;save()"><option value="1">Einzeln</option><option value="2">Zu zweit</option><option value="3">Dreiergruppe</option><option value="4">Vierergruppe</option></select></label>
+<label>Erlaubte Verstöße<input type="number" min="0" value="${T.maxV}" oninput="T.maxV=+this.value;save()"></label>
+<label class="chk"><input type="checkbox" ${T.guard?'checked':''} onchange="T.guard=this.checked;save()">Testschutz: Vollbild, Seitenwechsel erkennen, Einfügen sperren</label></div>
+<label>Hinweis für die Schüler<textarea rows="2" oninput="T.intro=this.value;save()">${esc(T.intro)}</textarea></label></div>
+<div class="card"><h2>Notenschlüssel</h2><p class="note">Ab wie viel Prozent gibt es welche Note?</p><div id="scale"></div><button class="btn ghost" onclick="T.scale.push([0,T.scale.length+1]);save();rs()">Stufe hinzufügen</button></div>
+<div class="card"><h2>Test speichern und wiederverwenden</h2><p class="note">Erzeuge einen Testcode und hebe ihn dir auf (z. B. in einer Textdatei). Später kannst du ihn hier wieder einlesen, ohne den Test neu zu bauen.</p><button class="btn ghost" onclick="expCode()">Testcode erzeugen</button> <button class="btn ghost" onclick="impCode()">Testcode einlesen</button><div id="tc" hidden><label>Testcode<textarea id="tccode" rows="3" readonly></textarea></label><button class="btn ghost" onclick="copy($('#tccode'))">Kopieren</button></div></div>
+<div id="qs"></div><button class="btn" onclick="T.qs.push(newQ());save();rq()">Aufgabe hinzufügen</button></section>
+<section id="tab-b" hidden><div class="card"><h2>Link und QR-Code</h2>
+<label>Adresse dieser Seite (falls nötig anpassen)<input id="base" value="${esc(location.href.split('#')[0])}"></label>
+<button class="btn" onclick="mkLink()">Link und QR-Code erzeugen</button>
+<div id="lk" hidden><label>Schüler-Link<input id="lnk" readonly></label><button class="btn ghost" onclick="copy($('#lnk'))">Link kopieren</button><div><div id="qr"></div></div><p class="note" id="lnote"></p></div></div>
+<p class="note">Der Test steckt komplett im Link. Ändere ich etwas am Test, erzeuge den Link neu. Die Seite muss für Schüler ohne Anmeldung geöffnet werden können.</p></section>
+<section id="tab-c" hidden><div class="card"><h2>Abgabe einlesen</h2><label>Antwortcode aus der E-Mail<textarea id="code" rows="3"></textarea></label><button class="btn" onclick="loadRes()">Abgabe öffnen</button></div><div id="rv"></div>
+<div class="card"><h2>Notenliste dieses Geräts</h2><div id="logbox"></div><button class="btn ghost" onclick="expCsv()">Als CSV exportieren</button> <button class="x" onclick="clearLog()">Liste löschen</button></div></section>
+</main>`;
+ $('#fnt').value=T.font;$('#mode').value=T.mode;rq();rs();renderLog();
+ document.querySelectorAll('.top nav button').forEach(b=>b.onclick=()=>{document.querySelectorAll('.top nav button').forEach(x=>x.classList.toggle('on',x===b));['a','b','c'].forEach(k=>$('#tab-'+k).hidden=k!==b.dataset.t)})}
+function rq(){$('#qs').innerHTML=T.qs.map((q,i)=>{
+ const ex=q.t==='mc'?`<label>Antwortmöglichkeiten, eine pro Zeile<textarea rows="4" oninput="T.qs[${i}].opts=this.value.split('\\n');save()">${esc(q.opts.join('\n'))}</textarea></label><label>Nummer der richtigen Antwort<input type="number" min="1" value="${q.c+1}" oninput="T.qs[${i}].c=this.value-1;save()"></label>`
+ :q.t==='gap'?`<label>Richtige Antwort, mehrere Varianten mit Semikolon<input value="${esc(q.a)}" oninput="T.qs[${i}].a=this.value;save()"></label>`:'';
+ return `<div class="card"><div class="row"><b>${i+1}.</b><select onchange="T.qs[${i}].t=this.value;save();rq()"><option value="free"${q.t=='free'?' selected':''}>Freitext, manuell bewertet</option><option value="mc"${q.t=='mc'?' selected':''}>Multiple Choice</option><option value="gap"${q.t=='gap'?' selected':''}>Kurzantwort, automatisch bewertet</option></select><label>Punkte<input type="number" min="0" step="0.5" value="${q.p}" oninput="T.qs[${i}].p=+this.value;save()"></label><button class="x" title="Aufgabe löschen" onclick="T.qs.splice(${i},1);save();rq()">✕</button></div>
+<label>Aufgabenstellung<textarea rows="2" oninput="T.qs[${i}].q=this.value;save()">${esc(q.q)}</textarea></label>${ex}</div>`}).join('')}
+function rs(){$('#scale').innerHTML=[...T.scale].sort((a,b)=>b[0]-a[0]).map((r,i)=>`<div class="row"><label>ab <input type="number" min="0" max="100" value="${r[0]}" oninput="T.scale[${T.scale.indexOf(r)}][0]=+this.value;save()"></label>% Note <input type="number" step="0.5" value="${r[1]}" oninput="T.scale[${T.scale.indexOf(r)}][1]=+this.value;save()" style="width:60px"><button class="x" onclick="T.scale.splice(${T.scale.indexOf(r)},1);save();rs()">✕</button></div>`).join('')}
+async function expCode(){$('#tc').hidden=false;$('#tccode').value=await pack(T)}
+async function impCode(){const c=prompt('Testcode einfügen:');if(!c)return;try{const nt=await unpack(c.trim());if(!nt.qs)throw 0;T=nt;save();teacher()}catch(e){alert('Der Code ist nicht lesbar.')}}
+function loadLog(){try{return JSON.parse(localStorage.getItem('twlog')||'[]')}catch(e){return[]}}
+function saveLog(l){try{localStorage.setItem('twlog',JSON.stringify(l))}catch(e){}}
+function addLog(r,s,m,gr){const l=loadLog();l.push({t:T.title,n:r.n.join(', '),d:r.d,s,m,p:m?Math.round(100*s/m):0,g:gr});saveLog(l);renderLog();alert('In der Notenliste gespeichert.')}
+function renderLog(){const b=$('#logbox');if(!b)return;const l=loadLog();b.innerHTML=l.length?('<table class="logt"><tr><th>Test</th><th>Name</th><th>Punkte</th><th>%</th><th>Note</th></tr>'+
+l.map(e=>`<tr><td>${esc(e.t||'')}</td><td>${esc(e.n)}</td><td>${e.s}/${e.m}</td><td>${e.p}%</td><td>${e.g}</td></tr>`).join('')+'</table>'):'<p class="note">Noch keine Einträge.</p>'}
+function expCsv(){const l=loadLog();if(!l.length)return alert('Die Notenliste ist leer.');const rows=[['Test','Name','Punkte','Maximal','Prozent','Note'],...l.map(e=>[e.t||'',e.n,e.s,e.m,e.p,e.g])];
+const csv=rows.map(r=>r.map(c=>'"'+String(c).replace(/"/g,'""')+'"').join(';')).join('\r\n');
+const blob=new Blob(['\ufeff'+csv],{type:'text/csv'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='Notenliste.csv';a.click()}
+function clearLog(){if(confirm('Die gesamte Notenliste auf diesem Gerät löschen?')){saveLog([]);renderLog()}}
+function mark(i,s){const el=$('#ans'+i);el.innerText=(el.innerText.replace(/\s+$/,'')+' '+s).trim()+' '}
+function markC(i){const t=prompt('Anmerkung zum Text:');if(!t)return;const el=$('#ans'+i);el.innerText=(el.innerText.replace(/\s+$/,'')+' ['+t+']').trim()+' '}
+async function mkLink(){
+ const link=$('#base').value.trim().split('#')[0]+'#t='+await pack(T);$('#lk').hidden=false;$('#lnk').value=link;$('#qr').innerHTML='';
+ try{new QRCode($('#qr'),{text:link,width:230,height:230,correctLevel:QRCode.CorrectLevel.L});$('#lnote').textContent='Gesamtpunkte: '+T.qs.reduce((a,q)=>a+q.p,0)+'. Zeige den QR-Code am Beamer oder drucke ihn aus.'}
+ catch(e){$('#lnote').textContent='Der Test ist für einen QR-Code zu lang. Kürze die Texte oder teile den Link.'}}
+async function loadRes(){
+ try{R=await unpack($('#code').value.trim());if(!R.a||!R.n)throw 0}catch(e){$('#rv').innerHTML='<p class="err">Der Code ist nicht lesbar. Kopiere ihn vollständig aus der E-Mail.</p>';return}
+ touched=false;
+ $('#rv').innerHTML=`<div class="card"><h2>${esc(R.n.join(', '))}</h2><p class="note">${esc(R.d||'')}${R.v&&R.v.length?' – <span class="err">'+R.v.length+' Verstoß/Verstöße: '+esc(R.v.map(v=>v.t+' '+v.w).join('; '))+'</span>':' – keine Verstöße'}</p></div>`+
+ T.qs.map((q,i)=>{const ap=autoPts(q,R.a[i]),auto=q.t!=='free',ok=auto&&ap===q.p,badge=auto?`<span class="badge ${ok?'ok':'bad'}">${ok?'✓ automatisch richtig':'✗ bitte prüfen'}</span>`:'';
+ return `<div class="card q"><p class="qt">${i+1}. ${esc(q.q)} <span class="pts">(${q.p} Punkte)</span> ${badge}</p>
+<div class="tools"><button type="button" onclick="mark(${i},'✓')" title="Haken setzen">✓</button><button type="button" onclick="mark(${i},'✗')" title="Kreuz setzen">✗</button><button type="button" onclick="mark(${i},'F')" title="Fehler markieren">F</button><button type="button" onclick="markC(${i})" title="Anmerkung schreiben">Anmerkung</button></div>
+<div class="ans" id="ans${i}" contenteditable="true">${esc(ansText(q,R.a[i]))}</div>
+<label>Vergebene Punkte<input class="pt" type="number" min="0" max="${q.p}" step="0.5" value="${ap}" oninput="recalc()"></label></div>`}).join('')+
+ `<div class="card keep"><div class="sum"><div>Punkte: <b id="tot"></b></div><div>Prozent: <b id="pct"></b></div><label>Note<input id="gr" oninput="touched=true"></label></div><button class="btn" onclick="rvPdf()">PDF mit Bewertung</button> <button class="btn ghost" onclick="addLog(R,pts().reduce((a,b)=>a+b,0),T.qs.reduce((a,q)=>a+q.p,0),$('#gr').value)">In Notenliste eintragen</button></div>`;
+ recalc()}
+function pts(){return [...document.querySelectorAll('.pt')].map(i=>+i.value||0)}
+function recalc(){const s=pts().reduce((a,b)=>a+b,0),m=T.qs.reduce((a,q)=>a+q.p,0),p=m?100*s/m:0;$('#tot').textContent=s+' / '+m;$('#pct').textContent=Math.round(p)+' %';if(!touched)$('#gr').value=noteFor(p)}
+function rvPdf(){const texts=T.qs.map((q,i)=>$('#ans'+i).innerText);deliver(makePdf(R,pts(),$('#gr').value,texts),'Bewertung_'+R.n.join('_').replace(/\s+/g,'')+'.pdf')}
+
+/* ---------- Schüler ---------- */
+function student(){
+ design();document.title=T.title;const A=[],V=[];let done=false,names=[],last=0;
+ app.innerHTML=`<div class="hero"><h1>${esc(T.title)}</h1><p>${esc(T.sub)}</p></div><main id="st"></main>`;const st=$('#st'),n=T.mode;
+ st.innerHTML=`<div class="card keep"><p>${esc(T.intro)}</p><h3>${n>1?'Namen':'Name'}</h3>${[...Array(n)].map((_,i)=>`<input class="nm" placeholder="Vor- und Nachname${n>1?' ('+(i+1)+')':''}">`).join('')}${T.guard?'<p class="note">Der Test läuft im Vollbild. Ein Wechsel zu anderen Seiten oder Apps wird erkannt und im PDF festgehalten. Einfügen ist gesperrt.</p>':''}<button class="btn" id="go">Test starten</button></div>`;
+ $('#go').onclick=()=>{names=[...document.querySelectorAll('.nm')].map(i=>i.value.trim());if(names.some(x=>!x))return alert('Bitte trage alle Namen ein.');begin()};
+ function fs(){try{document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen()}catch(e){}}
+ function trip(w){if(!T.guard||done)return;const t=Date.now();if(t-last<1500)return;last=t;V.push({t:new Date().toLocaleTimeString('de-DE'),w});const over=V.length>T.maxV;
+  $('#wmsg').textContent=over?'Zu viele Verstöße ('+V.length+'). Die Eingabe ist gesperrt. Du kannst nur noch abgeben.':'Verstoß '+V.length+' von '+T.maxV+' erlaubten. Alles wird im Protokoll festgehalten.';
+  $('#wback').textContent=over?'Zur Abgabe':'Zurück zum Test';$('#warn').style.display='flex';
+  if(over){document.querySelectorAll('.q input,.q textarea').forEach(e=>e.disabled=true)}}
+ function begin(){
+  if(T.guard){fs();document.addEventListener('visibilitychange',()=>document.hidden&&trip('Seite gewechselt'));window.addEventListener('blur',()=>trip('Fenster verlassen'));
+   document.addEventListener('fullscreenchange',()=>!document.fullscreenElement&&trip('Vollbild beendet'));
+   ['copy','cut','paste','drop','contextmenu'].forEach(e=>document.addEventListener(e,ev=>ev.preventDefault()));
+   $('#wback').onclick=()=>{$('#warn').style.display='none';fs()}}
+  window.scrollTo(0,0);
+  st.innerHTML=T.qs.map((q,i)=>`<div class="card q"><p class="qt">${i+1}. ${esc(q.q)} <span class="pts">(${q.p} Punkte)</span></p>${
+   q.t==='mc'?q.opts.map((o,j)=>`<label class="opt"><input type="radio" name="q${i}" value="${j}">${esc(o)}</label>`).join(''):
+   q.t==='gap'?`<input class="ans-in" data-i="${i}" placeholder="Deine Antwort">`:`<textarea class="ans-in" data-i="${i}" rows="4" placeholder="Deine Antwort"></textarea>`}</div>`).join('')+
+   `<div class="card keep"><button class="btn" id="sub">Test abgeben</button></div>`;
+  st.onchange=st.oninput=e=>{const t=e.target;if(t.type==='radio')A[+t.name.slice(1)]=+t.value;else if(t.dataset.i!=null)A[+t.dataset.i]=t.value};
+  $('#sub').onclick=finish}
+ async function finish(){
+  if(!confirm('Wirklich abgeben? Danach kannst du nichts mehr ändern.'))return;done=true;$('#warn').style.display='none';
+  try{document.fullscreenElement&&document.exitFullscreen()}catch(e){}
+  const r={n:names,a:T.qs.map((_,i)=>A[i]??null),v:V,d:new Date().toLocaleString('de-DE')},code=await pack(r);
+  st.innerHTML=`<div class="card"><h2>Fast geschafft</h2><p>1. Speichere dein PDF. 2. Schicke es an deine Lehrkraft. Der Antwortcode in der E-Mail-Vorlage hilft ihr beim Korrigieren.</p>
+<button class="btn" id="pdf">PDF speichern oder teilen</button><a class="btn ghost" href="mailto:${esc(T.mail)}?subject=${encodeURIComponent(T.title+' – '+names.join(', '))}&body=${encodeURIComponent('Antwortcode:\n'+code)}">E-Mail vorbereiten</a>
+<label>Antwortcode<textarea id="cd" readonly rows="3">${code}</textarea></label><button class="btn ghost" id="cp">Code kopieren</button></div>`;
+  $('#pdf').onclick=()=>deliver(makePdf(r),'Abgabe_'+names.join('_').replace(/\s+/g,'')+'.pdf');$('#cp').onclick=()=>copy($('#cd'))}
+}
+
+/* ---------- Start ---------- */
+if(location.hash.startsWith('#t=')){unpack(location.hash.slice(3)).then(t=>{T=t;student()}).catch(()=>{app.innerHTML='<main><div class="card"><h2>Link nicht lesbar</h2><p>Bitte frage deine Lehrkraft nach einem neuen Link.</p></div></main>'})}else teacher();
+</script>
+</body>
+</html>
