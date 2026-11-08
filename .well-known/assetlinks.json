@@ -1,0 +1,14 @@
+[
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.tim.testwerkstatt",
+      "sha256_cert_fingerprints": [
+        "93:50:DF:8C:60:BF:E6:91:E8:37:BF:C8:14:16:69:CE:29:E9:42:91:27:02:D9:06:C1:A4:82:5B:8A:70:73:73"
+      ]
+    }
+  }
+]
